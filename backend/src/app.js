@@ -20,12 +20,19 @@ const registrationRoutes  = require('./routes/registration.routes');
 
 const app = express();
 
-// app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+// Browser Origin headers never include a trailing slash — keep these bare.
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "http://localhost:3000",
-  process.env.FRONTEND_URL,
+  "http://127.0.0.1:3000",
+  process.env.FRONTEND_URL && process.env.FRONTEND_URL.replace(/\/$/, ""),
 ].filter(Boolean);
+
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  next();
+});
 
 app.use(
   cors({
@@ -36,7 +43,7 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      return callback(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -44,10 +51,10 @@ app.use(
   })
 );
 
-app.options("*", cors());
-app.use(express.json({ limit: '2mb' }));
-app.use(morgan('dev'));
+app.options(/.*/, cors());
 
+app.use(express.json({ limit: "2mb" }));
+app.use(morgan("dev"));
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.use('/api/auth',             authRoutes);
