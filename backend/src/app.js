@@ -20,7 +20,10 @@ const registrationRoutes  = require('./routes/registration.routes');
 
 const app = express();
 
+<<<<<<< HEAD
 // Browser Origin headers never include a trailing slash — keep these bare.
+=======
+>>>>>>> e3219845ee36a668bcb94ac87c81d2e82952c787
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
